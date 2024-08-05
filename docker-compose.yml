@@ -1,0 +1,36 @@
+version: '3'
+services:
+  frontend:
+    build: ./frontend-rede-eletiva
+    ports:
+      - "8080:8080"
+    networks:
+      - webnet
+
+  backend:
+    build: ./backend-rede-eletiva
+    ports:
+      - "3000:3000"
+    networks:
+      - webnet
+    depends_on:
+      - db
+    environment:
+      PGHOST: db
+      PGDATABASE: rede-eletiva
+      PGUSER: admin-rede-eletiva
+      PGPASSWORD: ete@21032024
+
+  db:
+    build: ./db
+    environment:
+      POSTGRES_DB: rede-eletiva
+      POSTGRES_USER: admin-rede-eletiva
+      POSTGRES_PASSWORD: ete@21032024
+    ports:
+      - "5432:5432"
+    networks:
+      - webnet
+
+networks:
+  webnet:
