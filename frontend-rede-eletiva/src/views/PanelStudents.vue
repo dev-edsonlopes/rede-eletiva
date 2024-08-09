@@ -332,13 +332,12 @@ export default {
         formData.append("module", importData.value.module);
         formData.append("reference_classe", importData.value.className);
 
-        const response = await API.post("/administrator/upload-csv", formData, {
+         await API.post("/administrator/upload-csv", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
 
-        console.log(response.data);
 
         showToast();
         fileInput.value.value = "";

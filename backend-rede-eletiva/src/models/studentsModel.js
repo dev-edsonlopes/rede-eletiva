@@ -136,21 +136,21 @@ export class StudentsModel {
         throw new Error("Formato de data de nascimento inválido.");
       }
 
-      // Remover registros da tabela choice_electives relacionados ao reference_classe
-      await sql`
-          DELETE FROM choice_electives 
-          WHERE ra IN (
-            SELECT ra 
-            FROM students 
-            WHERE reference_classe = ${reference_classe}
-          );
-        `;
+      // // Remover registros da tabela choice_electives relacionados ao reference_classe
+      // await sql`
+      //     DELETE FROM choice_electives
+      //     WHERE ra IN (
+      //       SELECT ra
+      //       FROM students
+      //       WHERE reference_classe = ${reference_classe}
+      //     );
+      //   `;
 
-      // Remover registros da tabela students com o reference_classe
-      await sql`
-          DELETE FROM students 
-          WHERE reference_classe = ${reference_classe};
-        `;
+      // // Remover registros da tabela students com o reference_classe
+      // await sql`
+      //     DELETE FROM students
+      //     WHERE reference_classe = ${reference_classe};
+      //   `;
 
       // Inserir novos dados
       return await sql`
