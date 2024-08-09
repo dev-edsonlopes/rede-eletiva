@@ -52,34 +52,22 @@ export class DiciplineModel {
   async registerElectives(data) {
     const { name, name_teacher, number_vacancies, module, frame } = data;
 
-    // Verificar e criar a sequência se não existir
     await sql`
-    DO $$ 
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = 'code_elective_seq') THEN
-            CREATE SEQUENCE code_elective_seq;
-        END IF;
-    END $$;
+    SELECT SETVAL('code_elective_seq', 
+      COALESCE((SELECT MAX(CAST(SUBSTRING(code_elective FROM 4) AS INT)) 
+          FROM electives
+          WHERE code_elective ~ '^EEM[0-9]+$'), 
+          1));
     `;
 
-    // Obter o próximo valor da sequência
-    const result = await sql`
-    SELECT NEXTVAL('code_elective_seq') AS next_val;
-    `;
-    const nextVal = result[0].next_val;
-
-    // Formatar o código da eletiva
-    const codeElective = `EEM${nextVal.toString().padStart(4, '0')}`;
-
-    // Inserir a nova eletiva
+    // Insert new elective
     const query = await sql`
-    INSERT INTO electives("code_elective", "name", name_teacher, number_vacancies, "module", frame) 
-    VALUES (${codeElective}, ${name}, ${name_teacher}, ${number_vacancies}, ${module}, ${frame});
-    `;
+    INSERT INTO electives("name", name_teacher, number_vacancies, "module", frame) 
+    VALUES (${name}, ${name_teacher}, ${number_vacancies}, ${module}, ${frame});
+  `;
 
     return query;
-}
-
+  }
 
   async update(id, data) {
     const { name, name_teacher, number_vacancies, module, frame } = data;

@@ -24,6 +24,7 @@ CREATE TABLE students (
 CREATE TABLE choice_electives (
     ra VARCHAR(7) NOT NULL,
     code_elective VARCHAR(7) NOT NULL,
+    frame VARCHAR(20) NOT NULL,
     PRIMARY KEY (ra, code_elective),
     FOREIGN KEY (ra) REFERENCES public.students (ra),
     FOREIGN KEY (code_elective) REFERENCES public.electives (code_elective)

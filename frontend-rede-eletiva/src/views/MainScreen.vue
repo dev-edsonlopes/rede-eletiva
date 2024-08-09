@@ -50,10 +50,11 @@
                 :disabled="elective.available_vacancies === '0'"
             >
               {{
-                student.length > 0 &&
-                elective.code_elective === selectedElective[elective.frame]
-                  ? "Selecionado" : elective.available_vacancies === '0' ?
-                 "Indisponível" : "Selecionar"
+                this.student[0].electives[frame] === elective.code_elective 
+                  ? "Selecionado" 
+                  : this.selectedElective[frame] === elective.code_elective
+                  ? "Selecionar" 
+                  : "Selecionar"
               }}
             </button>
           </div>

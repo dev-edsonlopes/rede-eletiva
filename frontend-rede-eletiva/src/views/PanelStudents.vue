@@ -84,6 +84,7 @@
         </div>
       </div>
     </div>
+    <div id="toast" class="toast">Importação de alunos concluída!</div>
   </Template>
   <Modal @close="toggleFilterModal" :modalActive="filterModalActive">
     <div class="modal-content">
@@ -189,7 +190,11 @@
           </div>
           <div class="input-group">
             <label for="className">Nome da Turma</label>
-            <input type="text" name="className" v-model="importData.className" />
+            <select name="className" v-model="importData.className">
+              <option v-for="option in filteredClasses" :key="option" :value="option">
+                {{ option }}
+              </option>
+      </select>
           </div>
           <button class="button" type="submit">Selecionar Arquivo</button>
         </form>
@@ -201,7 +206,7 @@
 <script>
 import Template from "@/components/TemplateADM";
 import { API } from "@/services/api";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import Modal from "@/components/ModalService.vue";
 import Cookies from "js-cookie";
 
@@ -240,6 +245,15 @@ export default {
       className: "",
     });
 
+    const classes = {
+      1: ['ADM1IN-A', 'ADM1IN-B', 'TDS1IN-A', 'TDS1IN-B'],
+      2: ['ADM2IN-A', 'ADM2IN-B', 'TDS2IN-A', 'TDS2IN-B'],
+      3: ['ADM3IN-A', 'ADM3IN-B', 'TDS3IN-A', 'TDS3IN-B'],
+    };
+
+    const filteredClasses = computed(() => {
+      return classes[importData.value.module] || [];
+    });
     const fetchStudents = async (referenceClasseFilters, moduleFilters) => {
       try {
         const token = Cookies.get("_myapp_token");
@@ -318,18 +332,27 @@ export default {
         formData.append("module", importData.value.module);
         formData.append("reference_classe", importData.value.className);
 
-        console.log([...formData]); // Para verificar o FormData
-
         const response = await API.post("/administrator/upload-csv", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
 
         console.log(response.data);
+
+        showToast();
+        fileInput.value.value = "";
       } catch (error) {
         console.log(error.message);
       }
+    };
+
+    const showToast = () => {
+      const toast = document.getElementById("toast");
+      toast.className = "toast show";
+      setTimeout(() => {
+        toast.className = toast.className.replace("show", "");
+      }, 3000);
     };
 
     const openImportModal = () => {
@@ -436,6 +459,7 @@ export default {
     fetchStudents();
     itensFilter();
     return {
+      filteredClasses,
       addModalActive,
       filterModalActive,
       importModalActive,
@@ -685,6 +709,38 @@ table .border-data {
 
 .button:hover {
   background-color: #263a7f;
+}
+
+.toast {
+  visibility: hidden;
+  min-width: 300px;
+  margin-left: -150px;
+  background-color: #4CAF50; 
+  text-align: center;
+  border-radius: 4px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.5s, visibility 0.5s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.toast .icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.toast .message {
+  display: inline;
 }
 </style>
 
